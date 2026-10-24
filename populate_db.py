@@ -1,4 +1,5 @@
 import asyncio
+import selectors
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -6,19 +7,14 @@ import httpx
 from sqlalchemy import delete, select, update
 
 import models
+from config import settings
 from database import AsyncSessionLocal, engine
-from image_utils import PROFILE_PICS_DIR
+from image_utils import _get_s3_client
 from main import app
 
 POPULATE_IMAGES_DIR = Path("populate_images")
 
 USERS = [
-    {
-        "username": "Aditya Bhatt",
-        "email": "adityabhatt3393@gmail.com",
-        "password": "TestPassword1!",
-        "image": "aditya.jpg",       
-    },
     {
         "username": "CoreyMSchafer",
         "email": "CoreyMSchafer@gmail.com",
@@ -230,34 +226,6 @@ POSTS = [
         "title": "Movie Quotes!",
         "content": "'You wanna know how I did it? This is how I did it, Anton. I never saved anything for the swim back.' - 'Gattaca'. One of my favorite movies of all time. As silly as it sounds, that movie is actually one of the main reasons I decided to pursue an internship at NASA back in college. After that internship, I found I had a craving to learn and do more. It pushed me to take programming more seriously, which eventually led me to where I am today... Which is writing a blog post about FastAPI that's just meant to fill space. TLDR: I watched Gattaca and now I'm writing sample blog posts at 3am on a Saturday for this FastAPI tutorial. And you can too!",
     },
-{
-    "title": "My Journey into AI and Machine Learning",
-    "content": "I've recently started spending more time learning artificial intelligence and machine learning. I'm focusing on understanding the fundamentals first and gradually moving toward deep learning, NLP, and generative AI.",
-},
-{
-    "title": "Getting Started with Python Projects",
-    "content": "One of the best ways to learn programming is by building projects. Small applications make it easier to understand how individual concepts work together and also reveal the areas where you need to improve.",
-},
-{
-    "title": "Understanding Backend Development",
-    "content": "Backend development has become one of my favorite areas to explore. Working with APIs, databases, authentication, and asynchronous programming gives a much better understanding of how modern applications work behind the scenes.",
-},
-{
-    "title": "Why I Like Working with APIs",
-    "content": "APIs provide a clean way for different parts of an application to communicate. Learning how HTTP methods, status codes, authentication, validation, and structured responses work has made backend development much easier to understand.",
-},
-{
-    "title": "Exploring Data Science",
-    "content": "I'm also exploring data science and learning how Python libraries can be used to clean, analyze, visualize, and understand datasets. Working with real datasets makes the concepts much more practical.",
-},
-{
-    "title": "Learning NLP Step by Step",
-    "content": "Natural Language Processing is another area I'm currently exploring. I'm starting with fundamentals such as tokenization, stemming, lemmatization, n-grams, POS tagging, and parsing before moving toward modern language models.",
-},
-{
-    "title": "Building Projects While Learning",
-    "content": "I'm trying to follow a simple approach: learn a concept, build something with it, and then improve the project. This makes learning more practical and helps turn theoretical knowledge into actual development skills.",
-},
 ]
 
 # The 44th post - always the oldest (easter egg for pagination tutorial)
@@ -268,12 +236,20 @@ POST_44 = {
 
 
 async def clear_existing_data() -> None:
-    # Delete profile pictures from local storage
-    if PROFILE_PICS_DIR.exists():
-        for file in PROFILE_PICS_DIR.iterdir():
-            if file.is_file() and file.name != ".gitkeep":
-                file.unlink()
-        print(f"Deleted profile pictures from {PROFILE_PICS_DIR}")
+    # Delete profile pictures from S3 (need DB records to know which files)
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(
+            select(models.User.image_file).where(models.User.image_file.is_not(None)),
+        )
+        filenames = result.scalars().all()
+
+    if filenames:
+        s3 = _get_s3_client()
+        s3.delete_objects(
+            Bucket=settings.s3_bucket_name,
+            Delete={"Objects": [{"Key": f"profile_pics/{f}"} for f in filenames]},
+        )
+        print(f"Deleted {len(filenames)} images from S3")
 
     # Clear database tables (order respects foreign keys)
     async with AsyncSessionLocal() as db:
@@ -323,7 +299,7 @@ async def populate() -> None:
         transport=transport,
         base_url="http://localhost",
     ) as client:
-        # Clear existing data (local images first, then database)
+        # Clear existing data (S3 images first, then database)
         await clear_existing_data()
 
         users: list[dict] = []
@@ -411,15 +387,13 @@ async def populate() -> None:
     print("\nDone!")
     print(f"  {len(USERS)} users")
     print(f"  {len(POSTS) + 1} posts")
-    print("  Profile pictures saved locally")
+    print("  Profile pictures uploaded to S3")
 
 
 if __name__ == "__main__":
-    import selectors
-
-    asyncio.run(
-        populate(),
+    with asyncio.Runner(
         loop_factory=lambda: asyncio.SelectorEventLoop(
             selectors.SelectSelector()
-        ),
-    )
+        )
+    ) as runner:
+        runner.run(populate())

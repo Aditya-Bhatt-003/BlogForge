@@ -1,7 +1,5 @@
-# C:\Users\Aditya Bhatt\Desktop\FastSAPI>uv add "psycopg[binary]"
-# is used to install the PostgreSQL driver for Python in your FastAPI project.
-# PS C:\Users\Aditya Bhatt\Desktop\FastSAPI> uv add alembic
-# PS C:\Users\Aditya Bhatt\Desktop\FastSAPI> uv run alembic init -t async alembic this last alembic is the directory where migration is stored
+# (fastsapi) PS C:\Users\Aditya Bhatt\Desktop\FastAPI-Blog> uv add boto3
+# FastAPI blog could use Boto3 to upload profile pictures to Amazon S3 instead of storing them on your computer.
 from contextlib import asynccontextmanager
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Request, status
@@ -32,7 +30,6 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory="templates")
 
