@@ -1,5 +1,5 @@
-# (fastsapi) PS C:\Users\Aditya Bhatt\Desktop\FastAPI-Blog> uv add boto3
-# FastAPI blog could use Boto3 to upload profile pictures to Amazon S3 instead of storing them on your computer.
+# C:\Users\Aditya Bhatt\Desktop\FastAPI-Blog>uv add --dev pytest
+# C:\Users\Aditya Bhatt\Desktop\FastAPI-Blog>uv add --dev "moto[s3]"
 from contextlib import asynccontextmanager
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Request, status
