@@ -1,11 +1,3 @@
-"""
-Quick script to verify AWS S3 credentials and permissions.
-
-Run with: uv run check_s3.py
-
-This checks that your .env credentials can upload to and delete from your S3 bucket
-without needing to go through the full application flow.
-"""
 
 from io import BytesIO
 

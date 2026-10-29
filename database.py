@@ -16,12 +16,3 @@ async def get_db():
         yield session
 
 
-# Component	Job
-# create_async_engine()	Creates async database engine
-# AsyncSession	Performs async DB operations
-# async_sessionmaker()	Creates AsyncSession objects
-# DeclarativeBase	Base for ORM models
-# get_db()	Provides a session to FastAPI endpoints
-# aiosqlite	Async Python driver for SQLite
-# SQLite	Actual database
-# blog.db	Your database file

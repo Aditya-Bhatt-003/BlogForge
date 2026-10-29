@@ -34,7 +34,7 @@ async def get_posts(
         limit = limit,
         has_more = has_more,
     )
-    # see how it work in chatgpt saved chat 
+
 
 
 @router.post(

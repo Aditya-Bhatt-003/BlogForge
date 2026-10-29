@@ -3,9 +3,7 @@ from httpx import AsyncClient
 from tests.conftest import auth_header , create_test_user , login_user
 
 @pytest.mark.anyio
-async def test_get_posts_empty(client : AsyncClient): # the pytest see this client paramter , finds that matching fixture, run the fixture to gets its value and then passes that value into our test , therfore we are 
-    # not creating or calling client here the pytest fixture injection is in action, when pytest runs a test it looks at the test function's  parameters and tries to match each paramter name to a fixture with the same name.
-    # it searches the current test file first and then the conftest.py in the same directory and then any conftest.py files in parent directories
+async def test_get_posts_empty(client : AsyncClient): 
     response = await  client.get("api/posts")
 
     assert response.status_code == 200
