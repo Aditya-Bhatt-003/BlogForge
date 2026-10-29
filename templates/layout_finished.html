@@ -6,9 +6,9 @@
 
     <!-- Site Info -->
     {% if title %}
-      <title>FastAPI Blog - {{ title }}</title>
+      <title>BlogForge - {{ title }}</title>
     {% else %}
-      <title>FastAPI Blog</title>
+      <title>BlogForge</title>
     {% endif %}
     <meta name="description" content="FastAPI Tutorial">
     <meta name="author" content="Corey Schafer">
@@ -65,7 +65,7 @@
       <nav class="navbar navbar-expand-md bg-steel fixed-top"
            data-bs-theme="dark">
         <div class="container">
-           <a class="navbar-brand me-4" href="{{ url_for("home")}}">FastAPI Blog</a>  <!-- home is the function name it is in main -->
+           <a class="navbar-brand me-4" href="{{ url_for("home")}}">BlogForge</a>  <!-- home is the function name it is in main -->
           <button class="navbar-toggler"
                   type="button"
                   data-bs-toggle="collapse"
@@ -149,7 +149,7 @@
     <footer class="mt-auto py-3 bg-body-tertiary border-top">
       <div class="container text-center">
         <p class="text-body-secondary mb-0">
-          © <span id="year"></span> Corey Schafer
+          © <span id="year"></span> Aditya Bhatt
         </p>
       </div>
     </footer>
