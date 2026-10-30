@@ -1,5 +1,5 @@
 [project]
-name = "FastAPI-Blog"
+name = "BlogForge"
 version = "0.1.0"
 description = "FastAPI Blog Project"
 readme = "README.md"
