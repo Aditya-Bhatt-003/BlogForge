@@ -10,3 +10,8 @@ wheels/
 .venv
 # secret file
 .env
+# Database seed scripts
+populate_db.py
+populate_db_production.py 
+# Seed images
+populate_images/
