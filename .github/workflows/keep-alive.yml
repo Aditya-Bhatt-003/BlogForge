@@ -1,0 +1,14 @@
+name: Keep BlogForge Alive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping BlogForge
+        run: curl -fsS https://blogforge-pmo4.onrender.com/
